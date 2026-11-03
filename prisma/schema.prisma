@@ -1,0 +1,28 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  apiKey    String     @unique @default(uuid())
+  role      String     @default("developer")
+  createdAt DateTime   @default(now())
+  logs      AuditLog[]
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String
+  payload   Json
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

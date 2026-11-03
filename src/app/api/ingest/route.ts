@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@/generated/prisma/client";
+import { authenticate } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limiter";
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+  const user = await authenticate(req);
 
-  const { allowed, remaining } = await checkRateLimit(ip, 5, 10000);
+  if (!user) {
+    return NextResponse.json(
+      { error: "Missing or invalid API key." },
+      {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Bearer realm="ingest"' },
+      }
+    );
+  }
+
+  const { allowed, remaining } = await checkRateLimit(user.id, 5, 10000);
 
   if (!allowed) {
     return NextResponse.json(
@@ -20,6 +33,16 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => ({}));
+
+  await prisma.$transaction(async (tx) => {
+    await tx.auditLog.create({
+      data: {
+        userId: user.id,
+        endpoint: req.nextUrl.pathname,
+        payload: body as Prisma.InputJsonValue,
+      },
+    });
+  });
 
   return NextResponse.json(
     {
