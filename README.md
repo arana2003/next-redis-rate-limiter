@@ -1,10 +1,10 @@
 # Distributed Rate Limiting & Telemetry Ingestion Gateway
 
-A high-throughput API gateway built with Next.js 15 (App Router) and Redis, implementing an atomic sliding-window log algorithm using embedded Lua to eliminate concurrency race conditions.
+A high-throughput API gateway built with Next.js 16 (App Router) and Redis, implementing an atomic sliding-window log algorithm using embedded Lua to eliminate concurrency race conditions.
 
 ## Architecture & System Design
 
-- Next.js 15 App Router: Dedicated serverless route handlers enforcing deterministic request validation and RFC-compliant rate-limit signaling.
+- Next.js 16 App Router: Dedicated serverless route handlers enforcing deterministic request validation and RFC-compliant rate-limit signaling.
 - Atomic Sliding Window via Lua: Eliminates check-then-act race conditions across concurrent processes by executing sorted set operations (ZREMRANGEBYSCORE, ZCARD, ZADD, EXPIRE) inside a single atomic Redis transaction.
 - Fail-Safe Connection Pool: Singleton ioredis configuration designed to prevent connection pool exhaustion during Node.js hot reloading and high-concurrency bursts.
 - RFC Header Signaling: Exposes standard headers (X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After) to allow client-side backoff negotiation.
