@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: fct_daily_submissions
+    columns:
+      - name: submission_date
+        tests: [not_null]
+      - name: user_id
+        tests: [not_null]
+      - name: submissions
+        tests: [not_null]

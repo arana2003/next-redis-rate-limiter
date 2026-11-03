@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_users
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: role
+        tests:
+          - accepted_values:
+              values: ["developer", "operator", "admin"]
+
+  - name: stg_audit_logs
+    columns:
+      - name: audit_log_id
+        tests: [unique, not_null]
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_users')
+              field: user_id
+      - name: created_at
+        tests: [not_null]
+      - name: action
+        tests:
+          - accepted_values:
+              values: ["Approved", "Request re-filing", "Flagged for manual audit"]

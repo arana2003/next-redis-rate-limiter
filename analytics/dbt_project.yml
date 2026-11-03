@@ -1,0 +1,15 @@
+name: gateway_analytics
+version: "1.0.0"
+config-version: 2
+profile: gateway_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+
+models:
+  gateway_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

@@ -1,0 +1,4 @@
+id,email,role,createdAt
+u-ana,ana@example.com,developer,2026-10-01 09:00:00
+u-ben,ben@example.com,operator,2026-10-01 09:00:00
+u-cy,cy@example.com,admin,2026-10-01 09:00:00
