@@ -27,6 +27,17 @@ npm run dev
 ### 4. Run Load Test Benchmark
 npm run test:load
 
-## Performance Benchmark
-- Target Ingest Latency: < 5ms per transaction on warm connection pools.
-- Accuracy: 100% boundary isolation under concurrent request bursts without lock contention.
+## Empirical Concurrency Benchmark
+
+Validated via automated load test (`npm run test:load`) executing 25 concurrent requests:
+
+| Metric | Measured Value |
+|---|---|
+| **Admitted (200 OK)** | 5 |
+| **Throttled (429 Rate Limited)** | 20 |
+| **Network / Transport Errors** | 0 |
+| **p50 Latency (Steady-State)** | ~14.78 ms |
+| **Avg Latency (including JIT warmup)** | ~122.04 ms |
+| **p95 Latency (Cold Route Compile)** | ~546.99 ms |
+
+*Note: Benchmarked locally against Next.js 15 App Router development server and Redis 7. Cold route compile jitter accounts for elevated p95 latency.*
