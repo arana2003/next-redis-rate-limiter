@@ -12,7 +12,7 @@ A high-throughput API gateway built with Next.js 16 (App Router) and Redis, impl
 ## Quickstart
 
 ### Prerequisites
-- Node.js >= 18.18.0
+- Node.js >= 20.9.0
 - Redis (native Homebrew service or Docker)
 
 ### 1. Install Dependencies
