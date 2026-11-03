@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { redis } from "./redis";
 
 const SLIDING_WINDOW_LUA = `
@@ -5,6 +6,7 @@ local key = KEYS[1]
 local now = tonumber(ARGV[1])
 local window = tonumber(ARGV[2])
 local limit = tonumber(ARGV[3])
+local member = ARGV[4]
 local clear_before = now - window
 
 redis.call('ZREMRANGEBYSCORE', key, 0, clear_before)
@@ -12,7 +14,7 @@ redis.call('ZREMRANGEBYSCORE', key, 0, clear_before)
 local current_requests = redis.call('ZCARD', key)
 
 if current_requests < limit then
-    redis.call('ZADD', key, now, now)
+    redis.call('ZADD', key, now, member)
     redis.call('EXPIRE', key, math.ceil(window / 1000))
     return {1, limit - current_requests - 1}
 else
@@ -34,7 +36,10 @@ export async function checkRateLimit(
     key,
     now.toString(),
     windowMs.toString(),
-    limit.toString()
+    limit.toString(),
+    // Unique per request: two requests in the same millisecond must not
+    // share a sorted-set member, or the second one is not counted.
+    randomUUID()
   )) as [number, number];
 
   return {
